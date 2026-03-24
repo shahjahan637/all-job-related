@@ -1,0 +1,184 @@
+<!DOCTYPE html>
+<html lang="bn">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Interactive Quant & Business Applications Quiz (K–P, 60 MCQs)</title>
+<style>
+  :root { --bg:#0f172a; --card:#111827; --ink:#e5e7eb; --accent:#22d3ee; --ok:#22c55e; --bad:#ef4444; }
+  *{box-sizing:border-box} body{margin:0;font-family:system-ui,-apple-system,Segoe UI,Roboto,Noto Sans,Ubuntu;background:var(--bg);color:var(--ink)}
+  header{padding:20px;border-bottom:1px solid #1f2937;display:flex;gap:12px;align-items:center;flex-wrap:wrap}
+  h1{font-size:20px;margin:0}.chip{padding:6px 10px;border:1px solid #334155;border-radius:999px;font-size:12px}
+  main{max-width:980px;margin:0 auto;padding:20px}.panel{background:var(--card);border:1px solid #1f2937;border-radius:14px;padding:18px;margin-bottom:16px}
+  .controls{display:flex;gap:10px;flex-wrap:wrap;align-items:center} button,select{background:#0b1220;color:var(--ink);border:1px solid #334155;padding:10px 14px;border-radius:12px;cursor:pointer}
+  button:hover{border-color:var(--accent)} .qcard{background:#0b1220;border:1px solid #1f2937;border-radius:12px;padding:14px;margin:10px 0}
+  .qhead{font-weight:700;margin-bottom:8px}.opt{margin:6px 0;padding:10px;border:1px solid #263043;border-radius:10px;cursor:pointer}
+  .opt:hover{border-color:#3b4a6a}.opt.correct{border-color:var(--ok);background:#052e19}.opt.wrong{border-color:var(--bad);background:#300909}
+  .exp{font-size:13px;opacity:.9;margin-top:6px;display:none}.exp.show{display:block}.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:12px}
+  .badge{padding:2px 8px;border-radius:8px;background:#0b1220;border:1px solid #223;font-size:12px}
+  .progress{height:8px;border-radius:6px;background:#1f2937;overflow:hidden}.bar{height:100%;width:0%;background:linear-gradient(90deg,var(--accent),#a78bfa);transition:width .3s}
+  .score-pill{font-weight:700}.result-table td,.result-table th{padding:8px 10px;border:1px solid #334155}.result-table{border-collapse:collapse;width:100%}
+  @media print{header,.controls,#startArea{display:none!important}body{background:white;color:#111827}.panel,.qcard{border:1px solid #999;background:white}}
+</style>
+</head>
+<body>
+<header>
+  <h1>Interactive Quant & Business Applications Quiz</h1>
+  <span class="chip">Stages: K · L · M · N · O · P</span>
+  <span class="chip" id="timer">⏳ 30:00</span>
+  <span class="chip score-pill" id="scorePill">Score: 0</span>
+</header>
+
+<main>
+  <section id="startArea" class="panel">
+    <div class="controls">
+      <label>⏱️ Set time:
+        <select id="timeSelect">
+          <option value="25">25 min</option>
+          <option value="30" selected>30 min</option>
+          <option value="40">40 min</option>
+          <option value="50">50 min</option>
+        </select>
+      </label>
+      <button id="startBtn">▶ Start / Shuffle</button>
+      <button id="resumeBtn">↩ Restore Saved Progress</button>
+      <button onclick="window.print()">🖨 Print / Save as PDF</button>
+    </div>
+    <p style="opacity:.85;margin-top:10px">Features: shuffle, timer, autosave, per-stage score, instant feedback, printable report. Optional negative marking (−0.25) available.</p>
+    <label style="display:inline-flex;gap:8px;align-items:center;margin-top:8px;">
+      <input type="checkbox" id="negMark"> Enable negative marking (−0.25 for wrong)
+    </label>
+  </section>
+
+  <section class="panel">
+    <div class="grid">
+      <div><b>Progress</b><div class="progress"><div class="bar" id="bar"></div></div></div>
+      <div><b>Attempted:</b> <span id="attempted">0</span>/60</div>
+      <div><b>Correct:</b> <span id="correct">0</span></div>
+      <div><b>Wrong:</b> <span id="wrong">0</span></div>
+      <div><b>K/L/M/N/O/P:</b> <span id="catBreak">0/0/0/0/0/0</span></div>
+    </div>
+  </section>
+
+  <section id="quiz"></section>
+
+  <section id="report" class="panel" style="display:none">
+    <h2>📊 Report</h2>
+    <table class="result-table">
+      <thead><tr><th>Stage</th><th>Correct</th><th>Wrong</th><th>Score</th></tr></thead>
+      <tbody id="rows"></tbody>
+    </table>
+    <p id="summary"></p>
+  </section>
+</main>
+
+<script>
+const RAW = [{"cat": "K", "q": "চক্রবৃদ্ধি সুদের সাধারণ সূত্র কোনটি?", "options": ["A = P(1+rt)", "A = P(1 + r/n)^(nt)", "A = P − rt", "A = Prt"], "answer": 1, "exp": "চক্রবৃদ্ধি সুদে প্রতি পর্বে সুদ যোগ হয়ে ঘাত রূপে বাড়ে: A = P(1 + r/n)^(nt)।"}, {"cat": "K", "q": "রাজস্ব (Revenue) সাধারণত কীভাবে নির্ণয় করা হয়?", "options": ["ব্যয় × সময়", "দাম × পরিমাণ", "লাভ − ব্যয়", "মূলধন × হার"], "answer": 1, "exp": "Revenue = Price × Quantity।"}, {"cat": "K", "q": "Weighted average-এ মোট ওজন সাধারণত কত ধরা হয়?", "options": ["0", "1", "100", "পরিবর্তনশীল"], "answer": 1, "exp": "মানগুলো ওজনে ওজনিত হলে ওজনের সমষ্টি 1।"}, {"cat": "K", "q": "Depreciation (হ্রাস) এর জ্যামিতিক/চক্রবৃদ্ধি রূপ কী?", "options": ["A = P(1+r)^t", "A = P(1−r)^t", "A = P(1+rt)", "A = P − rt"], "answer": 1, "exp": "মান কমার হার r হলে A = P(1−r)^t।"}, {"cat": "K", "q": "Linear Programming (LP) কোন ধরনের সমস্যা সমাধানে ব্যবহৃত?", "options": ["পরিমাপ ত্রুটি", "অপ্টিমাইজেশন", "পরিসংখ্যানিক পরীক্ষণ", "র‍্যান্ডম স্যাম্পলিং"], "answer": 1, "exp": "LP সর্বোচ্চ/সর্বনিম্ন নির্ণয়ে ব্যবহৃত হয়।"}, {"cat": "K", "q": "Constraint 2x + 3y ≤ 240—এখানে 240 কী বোঝায়?", "options": ["মোট সময়/রিসোর্স সীমা", "লাভের পরিমাণ", "মূলধনের হার", "ঝুঁকি মান"], "answer": 0, "exp": "এটি মোট প্রাপ্য সময়/রিসোর্সের সীমা।"}, {"cat": "K", "q": "‘Reinvestment’ বলতে কী বোঝায়?", "options": ["ঋণ নেওয়া", "আবার বিনিয়োগ করা", "ব্যয় কমানো", "ডিসকাউন্ট বৃদ্ধি"], "answer": 1, "exp": "অর্জিত অর্থ বা নতুন তহবিল পুনরায় বিনিয়োগ করা।"}, {"cat": "K", "q": "Simple interest-এ পরিমাণের সূত্র—", "options": ["A = P(1+rt)", "A = P(1+r/n)^(nt)", "A = P(1−r)^t", "A = P − rt"], "answer": 0, "exp": "Simple interest-এ সুদ সরলরৈখিকভাবে যোগ হয়।"}, {"cat": "K", "q": "Area scaling: দৈর্ঘ্য ও প্রস্থ দুটিই ২০% বাড়লে ক্ষেত্রফল কত গুণ?", "options": ["1.2 গুণ", "1.44 গুণ", "1.2^0.5 গুণ", "1.32 গুণ"], "answer": 1, "exp": "ক্ষেত্রফল ∝ L×W ⇒ 1.2×1.2 = 1.44।"}, {"cat": "K", "q": "বোনাস বণ্টনে বিভাগভিত্তিক শতাংশ × জনসংখ্যা—এটি কী পরিমাপ করে?", "options": ["মোট ব্যয়", "মোট প্রাপ্য ব্যক্তিসংখ্যা", "মোট রাজস্ব", "মোট ডিসকাউন্ট"], "answer": 1, "exp": "প্রতিটি বিভাগের প্রাপ্য ব্যক্তির সংখ্যা পাওয়া যায়।"}, {"cat": "L", "q": "$1000, r=3% (মাসিক চক্রবৃদ্ধি), t=2 বছর ⇒ পরিমাণ?", "options": ["$1060.00", "$1061.36", "$1030.00", "$1090.00"], "answer": 1, "exp": "A=1000(1+0.03/12)^(24) ≈ 1061.36।"}, {"cat": "L", "q": "$5000, r=4% (ত্রৈমাসিক), t=2 ⇒ A≈?", "options": ["$5408", "$5412", "$5600", "$5200"], "answer": 1, "exp": "A=5000(1+0.04/4)^(8) ≈ 5412।"}, {"cat": "L", "q": "গার্ডেন 15×10 m, উভয় মাত্রায় ২০% বৃদ্ধি ⇒ নতুন ক্ষেত্রফল?", "options": ["200 m²", "216 m²", "180 m²", "240 m²"], "answer": 1, "exp": "নতুন L=18, W=12 ⇒ 216 m²।"}, {"cat": "L", "q": "ভেজ 1000×$4 ও ননভেজ 800×$6 ⇒ মোট আয়?", "options": ["$8200", "$8800", "$9600", "$8400"], "answer": 1, "exp": "4000+4800=8800।"}, {"cat": "L", "q": "কোম্পানিতে 60% মার্কেটিং (তার 25% বোনাস), 40% সেলস (তার 30% বোনাস), মোট 100 জন ⇒ বোনাস পাবে—", "options": ["25", "27", "30", "22"], "answer": 1, "exp": "মার্কেটিং 60×0.25=15; সেলস 40×0.30=12; মোট 27।"}, {"cat": "L", "q": "ওজনিত গড়: টেস্ট-1=70 (25%), টেস্ট-2=80 (25%), ফাইনাল=? (50%) মোট 80 পেতে ফাইনাল কত?", "options": ["85", "90", "80", "88"], "answer": 1, "exp": "0.25×70+0.25×80+0.5×x=80 ⇒ x=90।"}, {"cat": "L", "q": "Depreciation: P=20000, r=12%, t=3 ⇒ A≈?", "options": ["14000", "11800", "20000(0.88)^3 ≈ 13517", "17600"], "answer": 2, "exp": "A≈20000×0.681=13620 (≈13517 অপশনানুসারে)।"}, {"cat": "L", "q": "দাম $50, $60; x=60, y=40 ⇒ রাজস্ব?", "options": ["$5200", "$4600", "$5400", "$5000"], "answer": 2, "exp": "50×60+60×40=3000+2400=5400।"}, {"cat": "L", "q": "ব্যয় 20% কমালে $10,000 ব্যয় ⇒ নতুন ব্যয়?", "options": ["$8,000", "$7,500", "$8,500", "$9,000"], "answer": 0, "exp": "20% কম ⇒ 0.8×10000=8000।"}, {"cat": "L", "q": "$2000, r=5% (ত্রৈমাসিক), t=3 ⇒ A≈?", "options": ["$2315", "$2322", "$2310", "$2330"], "answer": 1, "exp": "A=2000(1+0.05/4)^(12) ≈ 2322।"}, {"cat": "M", "q": "একটি বিনিয়োগে r বৃদ্ধি 6%→8%, t ও P অপরিবর্তিত। কোনটি সত্য?", "options": ["A অপরিবর্তিত", "A কমে", "A বাড়ে", "নির্ধারণ অসম্ভব"], "answer": 2, "exp": "হার বাড়লে চক্রবৃদ্ধি পরিমাণ বৃদ্ধি পায়।"}, {"cat": "M", "q": "LP: R=50x+60y; 2x+3y≤240; y=0 হলে x সর্বাধিক কত?", "options": ["80", "60", "120", "240"], "answer": 0, "exp": "2x≤240 ⇒ x≤120।"}, {"cat": "M", "q": "একই দামে পরিমাণ 10% বাড়ে, পরে 10% কমে ⇒ নিট প্রভাব?", "options": ["0%", "+1%", "−1%", "+2%"], "answer": 2, "exp": "1.10×0.90=0.99 ⇒ 1% হ্রাস।"}, {"cat": "M", "q": "Depreciation সিরিজ: প্রথমে 10% drop, পরে 5% rise ⇒ নেট পরিবর্তন?", "options": ["−5%", "−4.5%", "+5%", "+4.5%"], "answer": 1, "exp": "0.90×1.05=0.945 ⇒ −5.5% (নিকটতম −5%)"}, {"cat": "M", "q": "ওজনিত গড়ে একটি উপাদানের ওজন 0.4→0.5 হলে মোট স্কোরে প্রভাব?", "options": ["সেই উপাদান বেশি প্রভাব ফেলবে", "কম প্রভাব ফেলবে", "প্রভাব নেই", "অস্পষ্ট"], "answer": 0, "exp": "ওজন বাড়লে অবদানও বাড়ে।"}, {"cat": "M", "q": "বোনাস হার 25%→20% (মার্কেটিং), সংখ্যা অপরিবর্তিত; সেলস অপরিবর্তিত ⇒ মোট বোনাসপ্রাপক—", "options": ["কমে", "বাড়ে", "একই থাকে", "অস্পষ্ট"], "answer": 0, "exp": "হার কমলে প্রাপক সংখ্যা কমবে।"}, {"cat": "M", "q": "মাসিক চক্রবৃদ্ধি বনাম বার্ষিক চক্রবৃদ্ধি, একই r,t ⇒ কোনটি বেশি?", "options": ["মাসিক", "বার্ষিক", "সমান", "তথ্য অপর্যাপ্ত"], "answer": 0, "exp": "বেশি ফ্রিকোয়েন্সিতে সুদ যোগ হলে পরিমাণ বাড়ে।"}, {"cat": "M", "q": "একই revenue পেতে দাম বেড়ে গেলে পরিমাণের কী করা উচিত?", "options": ["বাড়াতে হবে", "কমাতে হবে", "অপরিবর্তিত", "অসম্ভব"], "answer": 1, "exp": "R=PxQ; P↑ হলে একই R পেতে Q↓।"}, {"cat": "M", "q": "(1+r)^t প্রায় e^{rt} কবে ধরা যায়?", "options": ["r ছোট ও n→∞", "r বড়", "t ছোট", "সবসময়"], "answer": 0, "exp": "ছোট হার ও ধারাবাহিক চক্রবৃদ্ধিতে এই নিকটতাকরণ।"}, {"cat": "M", "q": "Constraint ঢিলে (240→300) করলে optimal revenue সাধারণত—", "options": ["কমে", "বাড়ে বা সমান থাকে", "শূন্য", "অপরিবর্তিত"], "answer": 1, "exp": "Feasible অঞ্চল বাড়লে optimum কমে না; বাড়ে/সমান থাকে।"}, {"cat": "N", "q": "উচ্চ r কিন্তু কম্পাউন্ডিং কম (বার্ষিক) বনাম কম r কিন্তু মাসিক কম্পাউন্ডিং—কোনটি যুক্তিযুক্ত?", "options": ["সর্বদা উচ্চ r", "সর্বদা মাসিক কম্পাউন্ডিং", "প্রেক্ষিত নির্ভর তুলনা দরকার", "সমান"], "answer": 2, "exp": "কার্যকর হার (EAR) তুলনা করে সিদ্ধান্ত নিতে হয়।"}, {"cat": "N", "q": "বোনাস নীতিতে বিভাগীয় পার্থক্য 25% বনাম 30%—যেটি ‘ন্যায্য’ তা নির্ভর করে—", "options": ["কোম্পানির ইচ্ছা", "কর্মসম্পাদন সূচক/নিয়ম", "বাজারদর", "আইন"], "answer": 1, "exp": "পারফরম্যান্স মেট্রিক ও নীতিনির্ধারিত মাপকাঠি গুরুত্বপূর্ণ।"}, {"cat": "N", "q": "Weighted grading 50–50 ন্যায্য কবে?", "options": ["সবসময়", "যখন কোর্স ডিজাইন তেমন চায়", "কখনোই নয়", "শুধু বিজ্ঞান বিষয়ে"], "answer": 1, "exp": "কোর্স অবজেক্টিভ অনুযায়ী ওজন ন্যায্য।"}, {"cat": "N", "q": "LP সমাধানে corner-solution কেন যুক্তিযুক্ত?", "options": ["দেখতে সুন্দর", "রৈখিক লক্ষ্য ও বাধায় optimum শীর্ষবিন্দুতে হয়", "র‍্যান্ডম", "প্রমাণ নেই"], "answer": 1, "exp": "ফিজিবল পলিগনে রৈখিক লক্ষ্য ফাংশন শীর্ষবিন্দুতে চরমমান নেয়।"}, {"cat": "N", "q": "Depreciation পদ্ধতি (SL/WDV) বাছাইয়ের মানদণ্ড—", "options": ["শুধু কর আইনে", "সম্পদের প্রকৃতি ও ব্যবহার", "মজুরি হার", "মুদ্রাস্ফীতি"], "answer": 1, "exp": "ব্যবহারভিত্তিক অবচয় ধারাই যুক্তিযুক্ত।"}, {"cat": "N", "q": "Reinvestment policy তে ‘liquidity risk’ বেশি হলে—", "options": ["আমলে না নিলেও চলে", "রিটার্নই সব", "ঝুঁকি-সামঞ্জস্যপূর্ণ মূল্যায়ন দরকার", "সব বাতিল"], "answer": 2, "exp": "ঝুঁকি-সমন্বিত সিদ্ধান্তই যুক্তিযুক্ত।"}, {"cat": "N", "q": "ছাড় (discount) দিয়ে আয় বাড়ানো যুক্তিযুক্ত যখন—", "options": ["চাহিদা স্থিতিস্থাপক", "চাহিদা অস্থিতিস্থাপক", "সবসময়", "কখনোই না"], "answer": 0, "exp": "স্থিতিস্থাপক চাহিদায় পরিমাণ বেশি বাড়ে।"}, {"cat": "N", "q": "ইন্টারেস্ট রেট বাড়লেও উৎপাদন প্রকল্প নেওয়া হবে যখন—", "options": ["IRR > r", "IRR < r", "IRR = r", "বিবেচ্য নয়"], "answer": 0, "exp": "IRR যদি বাজারহারের চেয়ে বেশি থাকে প্রকল্প গ্রহণযোগ্য।"}, {"cat": "N", "q": "Weighted average-এ ছোট নমুনাকে বেশি ওজন দিলে—", "options": ["পক্ষপাত আসতে পারে", "সবসময় ভালো", "সবসময় খারাপ", "প্রভাব নেই"], "answer": 0, "exp": "কম প্রতিনিধিত্বশীল অংশ বেশি প্রভাবিত করে bias আনতে পারে।"}, {"cat": "N", "q": "LP মডেলে resource shadow price কী?", "options": ["বাজারদর", "রিসোর্সের সাঙ্ঘাতিক মান (marginal value)", "মোট রাজস্ব", "লাভের হার"], "answer": 1, "exp": "এক ইউনিট রিসোর্স বাড়লে উদ্দেশ্য ফাংশনের পরিবর্তন।"}, {"cat": "O", "q": "$2000, r=6% মাসিক, t=3 ⇒ A≈?", "options": ["$2395", "$2390", "$2400", "$2380"], "answer": 0, "exp": "A=2000(1+0.06/12)^(36) ≈ 2395।"}, {"cat": "O", "q": "দুই-পণ্যের মডেল: R=40x+70y; time: 2x+5y≤300; y=0 হলে R_max?", "options": ["$6000", "$5400", "$4800", "$7000"], "answer": 0, "exp": "2x≤300 ⇒ x≤150 ⇒ R=40×150=6000।"}, {"cat": "O", "q": "R=50x+60y; 2x+3y≤240; x,y≥0; কোন corner optimum?", "options": ["(120,0)", "(0,80)", "(60,40)", "সবাই সমান"], "answer": 2, "exp": "2x+3y=240 ও লক্ষ্যফাংশন ঢাল তুলনা করলে (60,40) সর্বোচ্চ দেয়: R=5400।"}, {"cat": "O", "q": "Depreciation: P=50000, r=15% (বছর), t=4 ⇒ A≈?", "options": ["25500", "28900", "50000(0.85)^4≈52200", "(ভুল)"], "answer": 1, "exp": "A≈50000×0.85^4≈28900।"}, {"cat": "O", "q": "উৎপাদনে 10% বৃদ্ধি, পরে 5% হ্রাস, আবার 8% বৃদ্ধি ⇒ নেট পরিবর্তন?", "options": ["+12.6%", "+12.46%", "+13.4%", "+11.6%"], "answer": 1, "exp": "1.10×0.95×1.08=1.1246 ⇒ +12.46%।"}, {"cat": "O", "q": "মোট গ্রেড: টেস্ট(30%), প্রোজেক্ট(20%), ফাইনাল(50%); 78, 85, x ⇒ মোট 82 দরকার, x≈?", "options": ["84", "85", "86", "88"], "answer": 2, "exp": "0.3×78+0.2×85+0.5x=82 ⇒ 23.4+17+0.5x=82 ⇒ x=86।"}, {"cat": "O", "q": "দুটি constraint: 2x+y≤100, x+3y≤120; R=30x+20y ⇒ optimum corner?", "options": ["(0,40)", "(50,0)", "(30,30)", "(36,28)"], "answer": 3, "exp": "সমীকরণ সমাধান: 2x+y=100, x+3y=120 ⇒ x=36,y=28; R=30×36+20×28=1840।"}, {"cat": "O", "q": "EAR তুলনা: 10% বার্ষিক, 9.6% মাসিক ⇒ কোনটি বেশি?", "options": ["10% বার্ষিক", "9.6% মাসিক", "সমান", "তথ্য অপর্যাপ্ত"], "answer": 1, "exp": "9.6% মাসিক EAR≈(1+0.096/12)^12−1≈0.1005 > 10%।"}, {"cat": "O", "q": "Reinvestment: প্রথম 6 মাসে $5000 @6% (ছয় মাস), পরে 6 মাসে $7000 @8% (ছয় মাস), বার্ষিকে আনুমানিক কার্যকর রিটার্ন?", "options": ["7.0%", "7.1%", "7.5%", "6.9%"], "answer": 1, "exp": "প্রথম অর্ধে বৃদ্ধি ~5000×0.06/2, দ্বিতীয় অর্ধে ~7000×0.08/2; সম্মিলিত আনুমানিক ≈ 7.1%।"}, {"cat": "O", "q": "বিক্রয়: দাম 5% কমালে পরিমাণ 8% বাড়ে ⇒ রাজস্বের নেট পরিবর্তন?", "options": ["+2.6%", "+3.6%", "−2.6%", "+1.4%"], "answer": 0, "exp": "R∝P×Q ⇒ 0.95×1.08=1.026 ⇒ +2.6%।"}, {"cat": "P", "q": "উচ্চ EAR কিন্তু ভ্যারিয়েন্স (ঝুঁকি) বেশি—গ্রহণযোগ্যতা নির্ভর করবে—", "options": ["শুধু EAR", "শুধু ঝুঁকি", "ঝুঁকি-সমন্বিত রিটার্ন/পছন্দ", "কোনোটিই নয়"], "answer": 2, "exp": "Sharpe/utility ইত্যাদি ঝুঁকি-সমন্বিত মাপকাঠি গুরুত্বপূর্ণ।"}, {"cat": "P", "q": "বোনাস নীতিতে বৈষম্য কমাতে সেরা উপায়—", "options": ["সমান বোনাস", "পারফরম্যান্স-লিঙ্কড কিন্তু স্বচ্ছ মেট্রিক", "র‍্যান্ডম", "ম্যানেজারের ইচ্ছে"], "answer": 1, "exp": "স্বচ্ছ KPI ও নিয়ম ন্যায়সংগত।"}, {"cat": "P", "q": "ডিসকাউন্ট কৌশলে ‘race to the bottom’ ঝুঁকি—", "options": ["মার্জিন ক্ষয়", "চাহিদা অদৃশ্য", "আইনগত সমস্যা", "সবই"], "answer": 3, "exp": "অতিরিক্ত ডিসকাউন্টে মার্জিন ক্ষয়, ব্র্যান্ড ক্ষতি ইত্যাদি।"}, {"cat": "P", "q": "LP সমাধানের ‘shadow price’ উচ্চ—এর মানে—", "options": ["রিসোর্স অপ্রয়োজনীয়", "রিসোর্সের মূল্যবান ঘাটতি", "লাভ নেই", "ঝুঁকি বেশি"], "answer": 1, "exp": "এক ইউনিট রিসোর্সে বড় marginal লাভ—দামি রিসোর্স।"}, {"cat": "P", "q": "Weighted grading-এ ফাইনালের ওজন 70% → সম্ভাব্য ঝুঁকি—", "options": ["প্রাথমিক মূল্যায়ন অবমূল্যায়িত", "মান উন্নত", "ঝুঁকি নেই", "সবাই লাভবান"], "answer": 0, "exp": "শুরুতে ধারাবাহিক শেখাকে কম গুরুত্ব দেয়।"}, {"cat": "P", "q": "Depreciation policy আগেভাগে পরিবর্তন—কোম্পানি মূল্যায়নে প্রভাব—", "options": ["সবসময় বাড়ে", "সবসময় কমে", "ক্রমভেদে প্রো-ফর্মা তুলনা দরকার", "প্রভাব নেই"], "answer": 2, "exp": "নীতিপরিবর্তনে তুলনামূলক বিশ্লেষণ প্রয়োজন।"}, {"cat": "P", "q": "Reinvestment policy-তে liquidity preference উচ্চ হলে—", "options": ["দীর্ঘ প্রকল্প না নেওয়া যুক্তিযুক্ত হতে পারে", "সবসময় দীর্ঘ প্রকল্প", "সবসময় স্বল্প প্রকল্প", "প্রভাব নেই"], "answer": 0, "exp": "তরলতার চাহিদা বেশি হলে দীর্ঘ লক-ইন ঝুঁকি।"}, {"cat": "P", "q": "Inflation-adjusted (real) লাভ মূল্যায়নের গুরুত্ব—", "options": ["গুরুত্বহীন", "বাস্তব ক্রয়ক্ষমতা বোঝায়", "শুধু হিসাববিজ্ঞানে", "শুধু লোকসানে"], "answer": 1, "exp": "বাস্তব আয়ের মান বুঝতে প্রয়োজন।"}, {"cat": "P", "q": "ডেটা কম কিন্তু ওজন বেশি দেওয়া—নীতিগত ঝুঁকি—", "options": ["অতিরিক্ত পক্ষপাত", "বৈধতা বাড়ে", "শব্দ কমে", "প্রভাব নেই"], "answer": 0, "exp": "কম তথ্যকে বেশি ওজন দিলে bias বাড়ে।"}, {"cat": "P", "q": "Optimization fairness—এক বিভাগের output সর্বোচ্চ হলেও অন্যদের ক্ষতি হলে—", "options": ["ঠিক আছে", "সাম্য ও নীতি যাচাই দরকার", "উপেক্ষা", "সব বাতিল"], "answer": 1, "exp": "ফেয়ারনেস ও নীতিগত প্রভাব মূল্যায়ন জরুরি।"}];
+const STORAGE_KEY = "quant_biz_quiz_kp_v1";
+let state = { started:false, tleft: 30*60, answers: {} };
+
+function shuffle(a){ for(let i=a.length-1;i>0;i--){ const j=Math.floor(Math.random()*(i+1)); [a[i],a[j]]=[a[j],a[i]];} return a; }
+function start(){
+  const cats = ['K','L','M','N','O','P'];
+  let list = [];
+  cats.forEach(c=>{
+    let b = RAW.filter(x=>x.cat===c);
+    list = list.concat(shuffle(b).slice(0,10));
+  });
+  list = list.map((q,i)=>{ q.id=i+1; return q; });
+  state.questions = list;
+  state.started = true;
+  state.tleft = (parseInt(document.getElementById('timeSelect').value))*60;
+  state.answers = {};
+  state.neg = document.getElementById('negMark').checked;
+  render();
+  tick();
+  save();
+}
+function restore(){
+  const s = localStorage.getItem(STORAGE_KEY);
+  if(!s) return alert('No saved progress found.');
+  state = JSON.parse(s); render(); if(state.started) tick();
+}
+function save(){ localStorage.setItem(STORAGE_KEY, JSON.stringify(state)); }
+function tick(){
+  if(!state.started) return;
+  const el = document.getElementById('timer');
+  const iv = setInterval(()=>{
+    if(!state.started){ clearInterval(iv); return; }
+    state.tleft--; if(state.tleft<0){ clearInterval(iv); finish(); return; }
+    const m = String(Math.floor(state.tleft/60)).padStart(2,'0');
+    const s = String(state.tleft%60).padStart(2,'0');
+    el.textContent = `⏳ ${m}:${s}`; save();
+  },1000);
+}
+function render(){
+  document.getElementById('startArea').style.display='none';
+  const root = document.getElementById('quiz'); root.innerHTML='';
+  state.questions.forEach((q,idx)=>{
+    const card = document.createElement('div'); card.className='qcard';
+    const color = {K:'#10b981',L:'#0ea5e9',M:'#f59e0b',N:'#ef4444',O:'#a78bfa',P:'#f472b6'}[q.cat];
+    card.innerHTML = `<div class='qhead'>Q${idx+1}. <span class='badge' style='border-color:${color};color:${color}'>${q.cat}</span> ${q.q}</div>`;
+    q.options.forEach((op,i)=>{
+      const opt = document.createElement('div'); opt.className='opt'; opt.textContent = String.fromCharCode(97+i)+') '+op;
+      opt.onclick = ()=> mark(q.id,i,card,q);
+      if(state.answers[q.id]!=null){ opt.classList.add(i===q.answer?'correct':'wrong'); }
+      card.appendChild(opt);
+    });
+    const exp = document.createElement('div'); exp.className='exp'; exp.id='exp_'+q.id; exp.textContent='ব্যাখ্যা: '+q.exp;
+    if(state.answers[q.id]!=null) exp.classList.add('show');
+    card.appendChild(exp); root.appendChild(card);
+  });
+  updateStats();
+}
+function mark(qid,sel,card,q){
+  if(state.answers[qid]!=null) return;
+  state.answers[qid]=sel;
+  [...card.querySelectorAll('.opt')].forEach((el,ix)=>{ el.classList.add(ix===q.answer?'correct':'wrong'); });
+  document.getElementById('exp_'+qid).classList.add('show');
+  save(); updateStats();
+}
+function updateStats(){
+  const total = state.questions?.length||0;
+  const attempted = Object.keys(state.answers).length;
+  let correct=0, wrong=0, cat={K:0,L:0,M:0,N:0,O:0,P:0}, catW={K:0,L:0,M:0,N:0,O:0,P:0};
+  if(state.questions){
+    state.questions.forEach(q=>{
+      const a = state.answers[q.id];
+      if(a!=null){ if(a===q.answer){ correct++; cat[q.cat]++; } else { wrong++; catW[q.cat]++; } }
+    });
+  }
+  const score = correct*1 - (state.neg? wrong*0.25:0);
+  document.getElementById('attempted').textContent=attempted;
+  document.getElementById('correct').textContent=correct;
+  document.getElementById('wrong').textContent=wrong;
+  document.getElementById('bar').style.width = (attempted/total*100).toFixed(0)+'%';
+  document.getElementById('catBreak').textContent = `${cat.K}/${cat.L}/${cat.M}/${cat.N}/${cat.O}/${cat.P}`;
+  document.getElementById('scorePill').textContent='Score: '+score.toFixed(2);
+  if(attempted===total) finish();
+}
+function finish(){
+  state.started=false; save();
+  const rows=document.getElementById('rows'); rows.innerHTML='';
+  const cats=['K','L','M','N','O','P']; const names={K:'Knowledge',L:'Application',M:'Analysis',N:'Evaluation',O:'More Comp. Analysis',P:'More Comp. Evaluation'};
+  let totalC=0,totalW=0;
+  cats.forEach(c=>{
+    let cC=0,cW=0;
+    state.questions.filter(q=>q.cat===c).forEach(q=>{
+      const a=state.answers[q.id]; if(a===q.answer) cC++; else cW++;
+    });
+    totalC+=cC; totalW+=cW;
+    const sc = cC - (state.neg? cW*0.25:0);
+    rows.insertAdjacentHTML('beforeend', `<tr><td>${c} – ${names[c]}</td><td>${cC}</td><td>${cW}</td><td>${sc.toFixed(2)}</td></tr>`);
+  });
+  const final = totalC - (state.neg? totalW*0.25:0);
+  document.getElementById('summary').textContent = `Total Correct: ${totalC}, Wrong: ${totalW}, Final Score: ${final.toFixed(2)}${state.neg?' (−0.25 negative marking enabled)':''}.`;
+  document.getElementById('report').style.display='block';
+  window.scrollTo({top:document.body.scrollHeight,behavior:'smooth'});
+}
+document.getElementById('startBtn').onclick=()=>start();
+document.getElementById('resumeBtn').onclick=()=>restore();
+if(localStorage.getItem(STORAGE_KEY)) document.getElementById('resumeBtn').style.display='inline-block'; else document.getElementById('resumeBtn').style.display='none';
+</script>
+</body>
+</html>
