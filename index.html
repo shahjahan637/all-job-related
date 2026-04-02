@@ -1,0 +1,69 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Interactive Age & Math MCQ Quiz</title>
+  <style>
+    body { font-family: Arial, sans-serif; background-color: #f0f0f0; margin: 0; padding: 0; }
+    .container { max-width: 1000px; margin: 0 auto; padding: 20px; background-color: white; }
+    .question { background-color: #f9f9f9; margin: 20px 0; padding: 15px; border-radius: 8px; }
+    .question-header { font-weight: bold; color: #0056b3; }
+    .option { margin: 10px 0; padding: 10px; background-color: #f1f1f1; border-radius: 8px; cursor: pointer; transition: all 0.3s ease; }
+    .option:hover { background-color: #e0e0e0; }
+    .quiz-result { display: none; padding: 10px; background-color: #f8d7da; color: #721c24; margin-top: 15px; border-radius: 5px; }
+    .quiz-footer { margin-top: 20px; text-align: center; }
+    .quiz-footer button { padding: 10px 20px; background-color: #007BFF; color: white; border: none; border-radius: 5px; cursor: pointer; }
+    .quiz-footer button:hover { background-color: #0056b3; }
+  </style>
+</head>
+<body>
+
+<div class="container">
+  <h1>Interactive MCQ Quiz: High-Application Average & Mathematical Concepts</h1>
+  <div id="quiz-container"></div>
+  <div class="quiz-footer">
+    <button id="submit-btn">Submit Quiz</button>
+  </div>
+</div>
+
+<script>
+  const questions = [{"question": "What is the average of the first 50 natural numbers?", "options": ["A) 24", "B) 25", "C) 50", "D) 51"], "answer": "B", "explanation": "The average of the first n natural numbers is n/2. For n = 50, the average is 50/2 = 25."}, {"question": "The average of three consecutive numbers is 40. What is the value of the largest number?", "options": ["A) 39", "B) 40", "C) 41", "D) 42"], "answer": "C", "explanation": "Let the numbers be x, x+1, x+2. The average of these is (x + x+1 + x+2)/3 = 40, solving gives x = 39."}, {"question": "The average of four consecutive numbers is 60. What is the value of the smallest number?", "options": ["A) 58", "B) 59", "C) 60", "D) 61"], "answer": "B", "explanation": "Let the numbers be x, x+1, x+2, x+3. The average is (x + x+1 + x+2 + x+3)/4 = 60, solving gives x = 59."}, {"question": "If the average of 5 numbers is 25, what is the sum of the numbers?", "options": ["A) 125", "B) 100", "C) 110", "D) 120"], "answer": "A", "explanation": "The sum of the numbers is the average multiplied by the number of numbers. 25 * 5 = 125."}, {"question": "The average age of 10 people is 30 years. What is the total of their ages?", "options": ["A) 200", "B) 300", "C) 100", "D) 400"], "answer": "B", "explanation": "The total is the average multiplied by the number of people. 30 * 10 = 300."}, {"question": "The sum of three consecutive numbers is 54. What is the value of the middle number?", "options": ["A) 18", "B) 19", "C) 20", "D) 21"], "answer": "B", "explanation": "Let the numbers be x, x+1, x+2. The sum is x + (x+1) + (x+2) = 54, solving gives x = 19."}, {"question": "The average of 6 numbers is 24. What is the sum of these numbers?", "options": ["A) 144", "B) 120", "C) 130", "D) 110"], "answer": "A", "explanation": "The sum is the average multiplied by the number of numbers. 24 * 6 = 144."}, {"question": "The average of 7 numbers is 28. What is the sum of these numbers?", "options": ["A) 200", "B) 196", "C) 140", "D) 160"], "answer": "B", "explanation": "The sum is the average multiplied by the number of numbers. 28 * 7 = 196."}, {"question": "The sum of two numbers is 48. If one number is 12 more than the other, what are the numbers?", "options": ["A) 24, 24", "B) 18, 30", "C) 22, 26", "D) 20, 28"], "answer": "B", "explanation": "Let the two numbers be x and x+12. Then x + (x+12) = 48. Solving gives x = 18, and the numbers are 18 and 30."}, {"question": "The sum of the ages of two persons is 72. The father is 4 years older than three times the son's age. Find their ages.", "options": ["A) 24, 48", "B) 32, 40", "C) 20, 52", "D) 28, 44"], "answer": "A", "explanation": "Let the son's age be x. Then the father's age is 3x + 4. Solving 3x + 4 + x = 72 gives x = 24, and the father's age is 48."}, {"question": "If the ratio of ages of two persons is 4:5, and their ages add up to 72, what is the age of the older person?", "options": ["A) 32", "B) 36", "C) 40", "D) 45"], "answer": "B", "explanation": "Let the ages be 4x and 5x. Solving 4x + 5x = 72 gives x = 8, so the older person's age is 36."}, {"question": "A man is 6 years older than his wife. The sum of their ages is 66. What is the husband\u2019s age?", "options": ["A) 36", "B) 42", "C) 33", "D) 40"], "answer": "B", "explanation": "Let the wife's age be x. Then the husband's age is x + 6. Solving x + (x + 6) = 66 gives x = 30, so the husband's age is 42."}, {"question": "A teacher's age is 3 times the age of a student. The sum of their ages is 48. What is the student's age?", "options": ["A) 12", "B) 16", "C) 8", "D) 10"], "answer": "A", "explanation": "Let the student's age be x. Then the teacher's age is 3x. Solving x + 3x = 48 gives x = 12."}, {"question": "The sum of the present ages of two people is 84. If the difference of their ages is 12, find their ages.", "options": ["A) 48, 36", "B) 50, 34", "C) 46, 38", "D) 52, 32"], "answer": "A", "explanation": "Let their ages be x and y. Then x + y = 84, and x - y = 12. Solving these gives x = 48 and y = 36."}, {"question": "The sum of the ages of three consecutive numbers is 54. What is the value of the middle number?", "options": ["A) 18", "B) 19", "C) 20", "D) 21"], "answer": "B", "explanation": "Let the numbers be x, x+1, x+2. The sum is x + (x+1) + (x+2) = 54, solving gives x = 19."}, {"question": "The average of 6 numbers is 24. What is the sum of these numbers?", "options": ["A) 144", "B) 120", "C) 130", "D) 110"], "answer": "A", "explanation": "The sum is the average multiplied by the number of numbers. 24 * 6 = 144."}, {"question": "The sum of 4 consecutive numbers is 50. What is the value of the smallest number?", "options": ["A) 11", "B) 12", "C) 13", "D) 14"], "answer": "B", "explanation": "Let the numbers be x, x+1, x+2, x+3. The sum is x + (x+1) + (x+2) + (x+3) = 50, solving gives x = 12."}, {"question": "The average of 5 numbers is 25. What is the sum of the numbers?", "options": ["A) 125", "B) 100", "C) 110", "D) 120"], "answer": "A", "explanation": "The sum is the average multiplied by the number of numbers. 25 * 5 = 125."}, {"question": "The sum of the ages of two persons is 72. The father is 4 years older than three times the son's age. Find their ages.", "options": ["A) 24, 48", "B) 32, 40", "C) 20, 52", "D) 28, 44"], "answer": "A", "explanation": "Let the son's age be x. Then the father's age is 3x + 4. Solving 3x + 4 + x = 72 gives x = 24, and the father's age is 48."}] ;
+
+  let score = 0;
+  const quizContainer = document.getElementById('quiz-container');
+
+  questions.forEach((q, index) => {
+    let questionElement = document.createElement('div');
+    questionElement.classList.add('question');
+    questionElement.innerHTML = `
+      <div class="question-header">Q${index+1}: ${q['question']}</div>
+      ${q['options'].map((option, idx) => `
+        <div class="option" onclick="checkAnswer(${index}, ${idx}, '${q['answer']}')">${option}</div>
+      `).join('')}
+      <div class="quiz-result" id="result-${index}" style="display: none;">${q['explanation']}</div>
+    `;
+    quizContainer.appendChild(questionElement);
+  });
+
+  function checkAnswer(questionIndex, optionIndex, correctAnswer) {
+    const selectedOption = document.querySelectorAll('.option')[optionIndex];
+    const explanation = document.getElementById(`result-${questionIndex}`);
+
+    if (selectedOption.innerText.includes(correctAnswer)) {
+      score++;
+      selectedOption.style.backgroundColor = '#4CAF50'; // Green for correct
+    } else {
+      selectedOption.style.backgroundColor = '#F44336'; // Red for incorrect
+    }
+    explanation.style.display = 'block'; // Show explanation
+  }
+
+  document.getElementById('submit-btn').onclick = function() {
+    alert("Your score is: " + score + " out of " + questions.length);
+  }
+</script>
+
+</body>
+</html>
